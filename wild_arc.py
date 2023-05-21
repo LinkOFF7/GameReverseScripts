@@ -23,6 +23,6 @@ def read(file):
             f.seek(cur)
             with open(f"{outdir}/{i}.dat", "wb") as d:
                 print(f"[{i+1}/{count}]{outdir}/{i}.dat")
-                d.write(data) # encrypted data
+                d.write(data) # obfuscated
                 
 read(sys.argv[1])
