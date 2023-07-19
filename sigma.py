@@ -1,4 +1,4 @@
-# Ninja Gaiden Sigma (steam) databin extraction script
+# Ninja Gaiden Sigma 1 (steam) databin extraction script
 
 import os
 import struct
