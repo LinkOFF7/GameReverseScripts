@@ -20,7 +20,7 @@ Used in Yakuza 3 and Binary Domain.
 #include <stdlib.h>
 #include <string.h>
 
-
+#define ext ".dat"
 
 #define unyakuza_bswap32(n) \
         (((n & 0xff000000) >> 24) | \
@@ -100,12 +100,18 @@ int unyakuza(unsigned char *in, int insz, unsigned char *out, int outsz, int che
 }
 
 int main(int argc, char *argv[]){
-	char *output_name = malloc(strlen(argv[1]) + 5);
-	strcat(output_name, argv[1]);
-	strcat(output_name, ".dat");
+	if(argc < 2) return 0;
+	FILE 	*f;
+	int 	size;
+	char 	output_name[100];
 	
-	FILE *f = fopen(argv[1], "rb");
-	int size;
+	// output name
+	strcat(output_name, argv[1]);
+	strcat(output_name, ext);
+	
+	// open file
+	f = fopen(argv[1], "rb");
+	
 	if(f){
 		// get size
 		fseek(f, 0, SEEK_END);
@@ -128,14 +134,18 @@ int main(int argc, char *argv[]){
 		FILE *o = fopen(output_name, "wb");
 		fwrite(unc_buf, 1, size, o);
 		
+		printf("Done.");
+		
 		// free memory
 		fclose(f);
 		fclose(o);
 		free(buffer);
 		free(unc_buf);
-		free(output_name);
 		
 		return 0;
+	} else{
+		printf("Can't get access to file.");
+		fclose(f);
+		return 0;
 	}
-	return 0;
 }
