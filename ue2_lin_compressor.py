@@ -8,7 +8,7 @@ import zlib
 CHUNK_SIZE = 16384
 
 def compress_lin(file):
-    result_filename = os.path.splitext(file)[0] + '.lin'
+    result_filename = os.path.splitext(file)[0]
     with open(file, 'rb') as f, open (result_filename, 'wb') as r:
         fsize = os.path.getsize(file)
         chunk_num = (fsize // CHUNK_SIZE) + 1
@@ -21,7 +21,7 @@ def compress_lin(file):
         print('%s compressed to %s' % (file, result_filename))
 
 def decompress_lin(file):
-    result_filename = os.path.splitext(file)[0] + '.dz'
+    result_filename = file + '.dec'
     with open(file, 'rb') as f, open (result_filename, 'wb') as r:
         fsize = os.path.getsize(file)
         cur = 0
@@ -37,5 +37,5 @@ if len(sys.argv) < 2:
 ext = os.path.splitext(sys.argv[1])[1]
 if ext == '.lin':
     decompress_lin(sys.argv[1])
-elif ext == '.dz':
+elif ext == '.dec':
     compress_lin(sys.argv[1])
