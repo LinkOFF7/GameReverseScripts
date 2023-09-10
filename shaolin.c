@@ -34,18 +34,18 @@ typedef struct{
 } shaolin_header;
 
 typedef struct{
-	unsigned int offset;
-	unsigned int size;
-	char flags;
-	unsigned int pos;
+	unsigned int 	offset;
+	unsigned int 	size;
+	char 		flags;
+	unsigned int 	pos;
 } shaolin_entry;
 
 
 int main(int argc, char** argv){
 	shaolin_header	*header;
 	shaolin_entry	*entries;
-	FILE			*in;
-	char 			*header_buf;
+	FILE		*in;
+	char 		*header_buf;
 	unsigned int	size;
 	unsigned int	i;
 	
