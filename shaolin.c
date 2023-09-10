@@ -25,29 +25,29 @@ unsigned getBits(unsigned value, unsigned offset, unsigned n)
 typedef struct{
 	unsigned char 	magic[4];
 	unsigned char 	unknown04[4];
-	unsigned int 	  version;
-	unsigned int 	  files;
-	unsigned int 	  unknown10;
-	unsigned int 	  align;
-	unsigned int 	  unknown18;
-	unsigned int 	  unknown1C;
+	unsigned int 	version;
+	unsigned int 	files;
+	unsigned int 	unknown10;
+	unsigned int 	align;
+	unsigned int 	unknown18;
+	unsigned int 	unknown1C;
 } shaolin_header;
 
 typedef struct{
-	unsigned int   offset;
-	unsigned int   size;
-	char           flags;
-	unsigned int   pos;
+	unsigned int offset;
+	unsigned int size;
+	char flags;
+	unsigned int pos;
 } shaolin_entry;
 
 
 int main(int argc, char** argv){
-	shaolin_header	  *header;
-	shaolin_entry	    *entries;
-	FILE			        *in;
-	char 			        *header_buf;
-	unsigned int	    size;
-	unsigned int	    i;
+	shaolin_header	*header;
+	shaolin_entry	*entries;
+	FILE			*in;
+	char 			*header_buf;
+	unsigned int	size;
+	unsigned int	i;
 	
 	in = fopen(argv[1], "rb");
 	if(!in){
