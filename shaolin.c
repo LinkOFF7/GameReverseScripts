@@ -5,51 +5,38 @@
 #include <string.h>
 #include <limits.h>
 
-#define getInt16High(n)(n & 0xffff)
-#define getInt16Low(n)((n >> 16) & 0xffff)
-#define getInt32High(n)(n & 0xffffffff)
-#define getInt32Low(n)((n >> 32) & 0xffffffff)
-
-unsigned getBits(unsigned value, unsigned offset, unsigned n)
-{
-	const unsigned max_n = CHAR_BIT * sizeof(unsigned);
-	if (offset >= max_n)
-		return 0;
-	value >>= offset;
-	if (n >= max_n)
-		return value;
-	const unsigned mask = (1u << n) - 1;
-	return value & mask;
-}
+#define GET_BITS(number, offbits, nbits) (((number) >> (offbits)) & ((1 << (nbits)) - 1))
 
 typedef struct{
-	unsigned char 	magic[4];
-	unsigned char 	unknown04[4];
+	unsigned char 	signature[4];
+	unsigned int 	virtualSize;
 	unsigned int 	version;
 	unsigned int 	files;
-	unsigned int 	unknown10;
+	unsigned int 	maxSize;
 	unsigned int 	align;
-	unsigned int 	unknown18;
-	unsigned int 	unknown1C;
+	unsigned int 	zero1;
+	unsigned int 	zero2;
 } shaolin_header;
 
 typedef struct{
 	unsigned int 	offset;
+	unsigned int 	value2;
 	unsigned int 	size;
-	char 		flags;
-	unsigned int 	pos;
+	unsigned int 	value4;
+	unsigned int	flags;
 } shaolin_entry;
 
 
 int main(int argc, char** argv){
 	shaolin_header	*header;
 	shaolin_entry	*entries;
-	FILE		*in;
-	char 		*header_buf;
-	unsigned int	size;
+	FILE			*in;
+	FILE			*log;
+	char 			*header_buf;
 	unsigned int	i;
 	
 	in = fopen(argv[1], "rb");
+	log = fopen("log.txt", "w");
 	if(!in){
 		printf("File %s can't be opened.", argv[1]);
 		return 0;
@@ -59,7 +46,7 @@ int main(int argc, char** argv){
 	header_buf = malloc(sizeof(shaolin_header));
 	fread(header_buf, sizeof(shaolin_header), 1, in);
 	header = (shaolin_header *)header_buf;
-	if(memcmp(header->magic, "PWF ", 4)){
+	if(memcmp(header->signature, "PWF ", 4)){
 		printf("Unknown file signature.");
 		return 0;
 	}
@@ -67,34 +54,37 @@ int main(int argc, char** argv){
 	// read entries
 	entries = malloc(header->files * sizeof(shaolin_entry));
 	for(i = 0; i < header->files; i++){
-		entries[i].pos = ftell(in);
+		unsigned long long value;
+		unsigned int off, v2, sz, v4, fl;
 		
-		unsigned long long check;
-		unsigned int off, sz;
-		fread(&check, sizeof(long long), 1, in);
-		off = getInt32High(check);
-		sz = getInt32Low(check);
-		if(off >> 24 == 0 && sz >> 24 == 0){
+		fread(&value, 8, 1, in);
+		off = GET_BITS(value, 0, 22);
+		v2 = GET_BITS(value, 22, 2);
+		sz = GET_BITS(value, 24, 20);
+		v4 = GET_BITS(value, 44, 12);
+		fl = GET_BITS(value, 56, 8);
+		
+		if(fl == 0x00){
 			entries[i].offset = off;
+			entries[i].value2 = -1;
 			entries[i].size = sz;
+			entries[i].value4 = 0xff;
+			entries[i].flags = 0xff;
 		} else {
-			// bits according bms script
-			unsigned offset = getBits(check, 0, 22);
-			unsigned size = getBits(check, 24, 20);
-			unsigned flags = getBits(check, 56, 8);
-			
-			entries[i].offset = offset * header->align;
-			entries[i].size = size * 4;
-			entries[i].flags = flags;
+			entries[i].offset = off * header->align;
+			entries[i].value2 = v2;
+			entries[i].size = sz * 4;
+			entries[i].value4 = v4;
+			entries[i].flags = fl;
 		}
-			
 	}
 	for(i = 0; i < header->files; i++){
-		if(entries[i].size != 0)
-			printf("%06d: 0x%08x (0x%08x) (0x%01x) (0x%08x)\n", i, entries[i].offset, entries[i].size, entries[i].flags, entries[i].pos);
+		//printf("%06d: 0x%08x (0x%08x) (%i) (0x%06x) (0x%02x)\n", i, entries[i].offset, entries[i].size, entries[i].value2, entries[i].value4, entries[i].flags);
+		fprintf(log, "%06d: 0x%08x (0x%08x) (%i) (0x%06x) (0x%02x)\n", i, entries[i].offset, entries[i].size, entries[i].value2, entries[i].value4, entries[i].flags);
 	}
 	
 	fclose(in);
+	fclose(log);
 	free(header_buf);
 	free(entries);
 };
