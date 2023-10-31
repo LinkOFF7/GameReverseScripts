@@ -1,0 +1,67 @@
+//------------------------------------------------
+//--- 010 Editor v10.0 Binary Template
+//
+//      File: UE4.27+ .toc
+//   Authors: LinkOFF
+//   Version: 1
+//   Purpose: Reverse
+//  Category: Archive
+// File Mask: *.toc
+//  ID Bytes: 
+//   History: 
+//------------------------------------------------
+
+typedef struct{
+	char 	signature[16];
+	char 	version;
+	char 	reserved0[3];
+	int32 	header_size;
+	int32 	entry_count;
+	int32 	compressed_blocks_count;
+	int32 	compressed_blocks_size;
+	int32 	compression_method_names_count;
+	int32 	compression_method_names_length;
+	int32 	compression_block_size;
+	int32 	directory_index_size;
+	int32 	partition_count;
+	char	container_id[8];
+	char	guid_encryption_key[16];
+	char	container_flags;
+	char	reserved1[3];
+    int32   toc_chunks_with_perfect_hash_seeds_count;
+    int64   partition_size;
+    int32   toc_chunks_without_perfect_hash_seeds_count;
+	char 	reserved2[44];
+} HEADER;
+
+typedef struct{
+	char id[8];
+	int16 index;
+	char pad;
+	char type;
+} CHUNK_ID;
+
+typedef struct{
+	char offset[5];
+	char size[5];
+} OFFSET_AND_LENGTHS;
+
+typedef struct{
+	char  	offset[5];
+	char 	compressed_size[3];
+	char 	uncompressed_size[3];
+	char 	compression_method;
+} COMPRESSION_BLOCK;
+
+typedef struct{
+	int32 mount_point_string_length;
+	int32 directory_index_array_entry_count;
+} DIRECTORY_INDEX;
+
+HEADER hdr;
+CHUNK_ID chunkIds[hdr.entry_count];
+OFFSET_AND_LENGTHS offsetsAndLengths[hdr.entry_count];
+int32 perfectHashSeed[hdr.toc_chunks_with_perfect_hash_seeds_count];
+int32 no_perfectHashSeed[hdr.toc_chunks_without_perfect_hash_seeds_count];
+COMPRESSION_BLOCK compBlocks[hdr.compressed_blocks_count];
+char compression_method[hdr.compression_method_names_length]
