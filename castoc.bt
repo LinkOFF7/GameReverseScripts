@@ -1,12 +1,12 @@
 //------------------------------------------------
 //--- 010 Editor v10.0 Binary Template
 //
-//      File: UE4.27+ .toc
+//      File: UE4.27+ TOC File
 //   Authors: LinkOFF
 //   Version: 1
 //   Purpose: Reverse
 //  Category: Archive
-// File Mask: *.toc
+// File Mask: *.utoc
 //  ID Bytes: 
 //   History: 
 //------------------------------------------------
@@ -28,9 +28,9 @@ typedef struct{
 	char	guid_encryption_key[16];
 	char	container_flags;
 	char	reserved1[3];
-    int32   toc_chunks_with_perfect_hash_seeds_count;
-    int64   partition_size;
-    int32   toc_chunks_without_perfect_hash_seeds_count;
+	int32   toc_chunks_with_perfect_hash_seeds_count;
+	int64   partition_size;
+	int32   toc_chunks_without_perfect_hash_seeds_count;
 	char 	reserved2[44];
 } HEADER;
 
@@ -54,9 +54,39 @@ typedef struct{
 } COMPRESSION_BLOCK;
 
 typedef struct{
-	int32 mount_point_string_length;
-	int32 directory_index_array_entry_count;
+	int32 mount_point_string_length<hidden=true>;
+	char mountPoint[mount_point_string_length];
+	
+	int32 directory_index_array_entry_count<hidden=true>;
+	typedef struct{
+		int32 directoryNameIndex;
+		int32 firstChildEntryIndex;
+		int32 firstSiblingEntryIndex;
+		int32 firstFileEntryIndex;
+	} DIEC;
+	DIEC diec[directory_index_array_entry_count];
+	
+	int32 file_index_array_entry_count<hidden=true>;
+	typedef struct{
+		int32 fileNameIndex;
+		int32 nextFileEntryIndex;
+		int32 userData;
+	} FIEC;
+	FIEC fiec[file_index_array_entry_count];
+	
+	int32 number_of_strings<hidden=true>;
+	typedef struct{
+		int32 strlen<hidden=true>;
+		char filename[strlen];
+	} FSTRING;
+	FSTRING filenames[number_of_strings]<optimize=false>;
 } DIRECTORY_INDEX;
+
+typedef struct{
+	char hash[20];
+	char pad[12]<hidden=true>;
+	char flags;
+} CHUNK_META;
 
 HEADER hdr;
 CHUNK_ID chunkIds[hdr.entry_count];
@@ -64,4 +94,6 @@ OFFSET_AND_LENGTHS offsetsAndLengths[hdr.entry_count];
 int32 perfectHashSeed[hdr.toc_chunks_with_perfect_hash_seeds_count];
 int32 no_perfectHashSeed[hdr.toc_chunks_without_perfect_hash_seeds_count];
 COMPRESSION_BLOCK compBlocks[hdr.compressed_blocks_count];
-char compression_method[hdr.compression_method_names_length]
+char compression_method[hdr.compression_method_names_length];
+DIRECTORY_INDEX dirIndex;
+CHUNK_META chunkMeta[hdr.entry_count];
