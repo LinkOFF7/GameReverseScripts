@@ -77,7 +77,13 @@ typedef struct{
 	int32 number_of_strings<hidden=true>;
 	typedef struct{
 		int32 strlen<hidden=true>;
-		char filename[strlen];
+        local int len = strlen;
+        if (len < 0){
+            len *= -1;
+            wchar_t filename[len];
+        }  else {
+		    char filename[len];
+        }
 	} FSTRING;
 	FSTRING filenames[number_of_strings]<optimize=false>;
 } DIRECTORY_INDEX;
