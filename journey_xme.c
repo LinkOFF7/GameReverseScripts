@@ -10,7 +10,7 @@ int main(int argc, char** argv) {
 	}
 	FILE* fl;
 	int* buf;
-	size_t size; // size is always 32-bit aligned because of int xor key
+	size_t size; // always 32-bit aligned because of int xor key
 	int i, c;
 	int key = 0x6341F337;
 
