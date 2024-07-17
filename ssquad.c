@@ -6,6 +6,8 @@ int xor(unsigned char* data, unsigned int datasize, unsigned char* key, unsigned
   if (datasize <= keysize) return -1;
 	unsigned int i, k;
 	for (i = 0; i < datasize; i) {
+		if(i + keysize > datasize)
+			keysize = datasize - i;
 		for (k = 0; k < keysize; k++) {
 			data[i++] ^= key[k];
 		}
