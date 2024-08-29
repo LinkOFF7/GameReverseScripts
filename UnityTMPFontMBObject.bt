@@ -1,0 +1,176 @@
+
+LittleEndian();
+
+void AlignPos(){
+    local int cur = FTell();
+    if(cur % 4 != 0){
+        FSeek(cur + (4 - cur % 4));
+    }
+}
+
+typedef struct{    
+    int32 strlen;
+    char str[strlen];
+    AlignPos();
+} String <read=stringRead>;
+
+string stringRead(String &v) {
+    if(v.strlen > 0)
+        return v.str;
+    else
+        return "";
+};
+
+struct PPtr{
+    int32 m_FileID;
+    int64 m_PathID;
+};
+
+struct FaceInfo{
+    int32 m_FaceIndex;
+    String m_FamilyName;
+    String m_StyleName;
+    int32 m_PointSize;
+    float m_Scale;
+    int32 m_UnitsPerEM;
+    float m_LineHeight;
+    float m_AscentLine;
+    float m_CapLine;
+    float m_MeanLine;
+    float m_Baseline;
+    float m_DescentLine;
+    float m_SuperscriptOffset;
+    float m_SuperscriptSize;
+    float m_SubscriptOffset;
+    float m_SubscriptSize;
+    float m_UnderlineOffset;
+    float m_UnderlineThickness;
+    float m_StrikethroughOffset;
+    float m_StrikethroughThickness;
+    float m_TabWidth;
+};
+
+struct FaceInfo_Legacy{
+    String Name;
+    float PointSize;
+    float Scale;
+    int32 CharacterCount;
+    float LineHeight;
+    float Baseline;
+    float Ascender;
+    float CapHeight;
+    float Descender;
+    float CenterLine;
+    float SuperscriptOffset;
+    float SubscriptOffset;
+    float SubSize;
+    float Underline;
+    float UnderlineThickness;
+    float Strikethrough;
+    float StrikethroughThickness;
+    float TabWidth;
+    float Padding;
+    float AtlaasWidth;
+    float AtlasHeight;
+};
+
+struct GlyphMetrics{
+    float m_Width;
+    float m_Height;
+    float m_HorizontalBearingX;
+    float m_HorizontalBearingY;
+    float m_HorizontalAdvance;
+};
+
+struct GlyphRect{
+    int m_X;
+    int m_Y;
+    int m_Width;
+    int m_Height;
+};
+
+struct Glyph{
+    int32 m_Index;
+    GlyphMetrics m_Metrics;
+    GlyphRect m_GlyphRect;
+    float m_Scale;
+    int32 m_AtlasIndex;
+    int32 m_ClassDefinitionType;
+};
+
+struct TMP_Character{
+    int32 m_ElementType;
+    uint32 m_Unicode;
+    uint32 m_GlyphIndex;
+    float m_Scale;
+};
+
+struct FontAssetCreationSettings {
+    String sourceFontFileName;
+    String sourceFontFileGUID;
+    int32 pointSizeSamplingMode;
+    int32 pointSize;
+    int32 padding;
+    int32 packingMode;
+    int32 atlasWidth;
+    int32 atlasHeight;
+    int32 characterSetSelectionMode;
+    String characterSequence;
+    String referenceFontAssetGUID;
+    String referenceTextAssetGUID;
+    int32 fontStyle;
+    float fontStyleModifier;
+    int32 renderMode;
+    int32 includeFontFeatures;
+};
+
+
+// header
+PPtr  m_GameObject;
+int32 m_Enabled;
+PPtr  m_Script;
+String m_Name;
+int32 hashCode;
+PPtr  m_Material;
+int32 materialHashCode;
+String m_Version;
+String m_SourceFontFileGUID;
+PPtr  m_SourceFontFile;
+int32 m_AtlasPopulationMode;
+FaceInfo  m_FaceInfo;
+//body
+int32 glyphsCount;
+Glyph m_GlyphTable[glyphsCount];
+int32 TMP_CharCount;
+TMP_Character m_CharacterTable[TMP_CharCount];
+int32 atlasCount;
+PPtr m_AtlasTextures[atlasCount];
+int32 m_AtlasTextureIndex;
+int32 m_IsMultiAtlasTexturesEnabled;
+int32 m_ClearDynamicDataOnBuild;
+int32 usedRectCount;
+GlyphRect m_UsedGlyphRects[usedRectCount];
+int32 freeRectCount;
+GlyphRect m_FreeGlyphRects[freeRectCount];
+FaceInfo_Legacy m_fontInfo;
+// footer
+PPtr atlas;
+int32 m_AtlasWidth;
+int32 m_AtlasHeight;
+int32 m_AtlasPadding;
+int32 m_AtlasRenderMode;
+int32 m_glyphInfoListCount;
+int32 m_KerningTableCount;
+int32 m_FontFeatureTableCount;
+int32 fallbackFontAssetsCount;
+int32 m_FallbackFontAssetTableCount;
+FontAssetCreationSettings m_CreationSettings;
+int32 m_fontWeightTableCount;
+PPtr m_fontWeightTable[m_fontWeightTableCount * 2];  // regular + italic
+int32 m_fontWeightsCount;
+float normalStyle;
+float normalSpacingOffset;
+float boldStyle;
+float boldSpacing;
+int32 italicStyle;
+int32 tabSize;
