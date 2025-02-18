@@ -47,7 +47,7 @@ def extract(mvgl_file: str, output_dir: str) -> int:
         with open(output_dir + '/' + name_entries[i].get_string(), 'wb') as r:
             raw_data = f.read(data_entry.comp_size)
             decompressed = lz4.block.decompress(raw_data, data_entry.size) \
-                if data_entry.size < data_entry.comp_size else raw_data
+                if data_entry.size > data_entry.comp_size else raw_data
             r.write(decompressed)
 
 
