@@ -37,7 +37,7 @@ def extract(mvgl_file: str, output_dir: str) -> int:
     for i in range(header.file_name_count): name_entries.append(NameEntry(f))
     for i in range(header.data_entry_count): data_entries.append(DataEntry(f))
     for i in range(len(file_entries)):
-        if file_entries[i].compare_bit == -1 or file_entries[i].data_id == 1:
+        if file_entries[i].compare_bit == -1 and file_entries[i].data_id == -1:
             continue
         print('Extracting: %s' % (name_entries[i].get_string()))
         data_entry = data_entries[file_entries[i].data_id]
